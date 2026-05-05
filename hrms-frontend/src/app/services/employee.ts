@@ -15,7 +15,7 @@ export interface Employee {
 
 @Injectable({ providedIn: 'root' })
 export class EmployeeService {
-  private apiUrl = 'http://localhost:5000/api/employee';
+  private apiUrl = 'http://localhost:5011/api/employee';
   constructor(private http: HttpClient) {}
 
   getAll(search?: string) {

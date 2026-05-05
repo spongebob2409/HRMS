@@ -12,7 +12,7 @@ export interface Salary {
 
 @Injectable({ providedIn: 'root' })
 export class SalaryService {
-  private apiUrl = 'http://localhost:5000/api/salary';
+  private apiUrl = 'http://localhost:5011/api/salary';
   constructor(private http: HttpClient) {}
 
   getAll() { return this.http.get<Salary[]>(this.apiUrl); }

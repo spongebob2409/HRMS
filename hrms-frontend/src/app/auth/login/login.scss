@@ -1,0 +1,30 @@
+.login-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1976d2, #42a5f5);
+}
+
+.login-card {
+  width: 400px;
+  padding: 24px;
+
+  mat-card-header {
+    margin-bottom: 24px;
+    mat-card-title { font-size: 24px; font-weight: bold; }
+  }
+}
+
+.full-width { width: 100%; }
+
+.error {
+  color: red;
+  font-size: 13px;
+  margin-top: -8px;
+}
+
+mat-card-actions {
+  padding: 0 !important;
+  button { height: 48px; font-size: 16px; }
+}

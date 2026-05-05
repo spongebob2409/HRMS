@@ -14,7 +14,7 @@ export interface Payroll {
 
 @Injectable({ providedIn: 'root' })
 export class PayrollService {
-  private apiUrl = 'http://localhost:5000/api/payroll';
+  private apiUrl = 'http://localhost:5011/api/payroll';
   constructor(private http: HttpClient) {}
 
   getAll() { return this.http.get<Payroll[]>(this.apiUrl); }
