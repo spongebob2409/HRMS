@@ -15,6 +15,7 @@ pnpm-debug.log*
 # IDE and OS
 .vs/
 .vscode/
+.nested_git_backup/
 *.user
 *.suo
 *.swp
