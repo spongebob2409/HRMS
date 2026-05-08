@@ -26,20 +26,42 @@ public class SalaryController : ControllerBase
         Ok(await _context.Salaries.Where(s => s.EmployeeId == employeeId).ToListAsync());
 
     [HttpPost]
-    public async Task<IActionResult> Create(Salary salary)
+    public async Task<IActionResult> Create([FromBody] SalaryDto dto)
     {
+        // Check employee exists
+        var employeeExists = await _context.Employees.AnyAsync(e => e.Id == dto.EmployeeId);
+        if (!employeeExists)
+            return BadRequest(new { message = $"Employee with ID {dto.EmployeeId} does not exist" });
+
+        var salary = new Salary {
+            EmployeeId = dto.EmployeeId,
+            BasicSalary = dto.BasicSalary,
+            Bonus = dto.Bonus,
+            Deduction = dto.Deduction,
+            EffectiveDate = DateTime.Now
+        };
         _context.Salaries.Add(salary);
         await _context.SaveChangesAsync();
         return Ok(salary);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, Salary salary)
+    public async Task<IActionResult> Update(int id, [FromBody] SalaryDto dto)
     {
-        if (id != salary.Id) return BadRequest();
-        _context.Entry(salary).State = EntityState.Modified;
+        // Check employee exists
+        var employeeExists = await _context.Employees.AnyAsync(e => e.Id == dto.EmployeeId);
+        if (!employeeExists)
+            return BadRequest(new { message = $"Employee with ID {dto.EmployeeId} does not exist" });
+
+        var salary = await _context.Salaries.FindAsync(id);
+        if (salary == null) return NotFound();
+        salary.EmployeeId = dto.EmployeeId;
+        salary.BasicSalary = dto.BasicSalary;
+        salary.Bonus = dto.Bonus;
+        salary.Deduction = dto.Deduction;
+        salary.EffectiveDate = DateTime.Now;
         await _context.SaveChangesAsync();
-        return NoContent();
+        return Ok(salary);
     }
 
     [HttpDelete("{id}")]
@@ -51,4 +73,12 @@ public class SalaryController : ControllerBase
         await _context.SaveChangesAsync();
         return NoContent();
     }
+}
+
+public class SalaryDto
+{
+    public int EmployeeId { get; set; }
+    public decimal BasicSalary { get; set; }
+    public decimal Bonus { get; set; }
+    public decimal Deduction { get; set; }
 }

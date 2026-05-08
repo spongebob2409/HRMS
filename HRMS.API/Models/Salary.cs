@@ -7,7 +7,7 @@ namespace HRMS.API.Models
         public decimal BasicSalary { get; set; }
         public decimal Bonus { get; set; }
         public decimal Deduction { get; set; }
-        public DateTime EffectiveDate { get; set; }
-        public Employee Employee { get; set; }
+        public DateTime EffectiveDate { get; set; } = DateTime.Now;
+        public Employee? Employee { get; set; }
     }
 }

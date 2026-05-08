@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -11,6 +11,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { EmployeeService, Employee } from '../../services/employee';
 import { EmployeeFormComponent } from '../employee-form/employee-form';
+
 
 @Component({
   selector: 'app-employee-list',
@@ -32,7 +33,7 @@ import { EmployeeFormComponent } from '../employee-form/employee-form';
     <div class="container">
       <mat-form-field appearance="outline">
         <mat-label>Search</mat-label>
-        <input matInput [(ngModel)]="search" (ngModelChange)="loadEmployees()" placeholder="Search by name or department">
+        <input matInput [(ngModel)]="search" (input)="loadEmployees()" placeholder="Search by name or department">
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
 
@@ -77,12 +78,15 @@ export class EmployeeListComponent implements OnInit {
   columns = ['name', 'position', 'department', 'status', 'actions'];
   search = '';
 
-  constructor(private empService: EmployeeService, public router: Router, private dialog: MatDialog) {}
+  constructor(private empService: EmployeeService, public router: Router, private dialog: MatDialog, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() { this.loadEmployees(); }
 
   loadEmployees() {
-    this.empService.getAll(this.search).subscribe(data => this.employees = data);
+    this.empService.getAll(this.search).subscribe(data => {
+      this.employees = [...data];
+      this.cdr.detectChanges();
+    });
   }
 
   openForm(emp?: Employee) {

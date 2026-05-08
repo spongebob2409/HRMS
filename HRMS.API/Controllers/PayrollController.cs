@@ -31,6 +31,9 @@ public class PayrollController : ControllerBase
             .Where(e => e.EmploymentStatus == "Active" && e.Salary != null)
             .ToListAsync();
 
+        if (!employees.Any())
+            return BadRequest(new { message = "No active employees with salary found" });
+
         var generated = new List<Payroll>();
 
         foreach (var emp in employees)
@@ -39,12 +42,11 @@ public class PayrollController : ControllerBase
                 .AnyAsync(p => p.EmployeeId == emp.Id && p.Month == month && p.Year == year);
             if (exists) continue;
 
-            decimal gross = emp.Salary.BasicSalary + emp.Salary.Bonus - emp.Salary.Deduction;
+            decimal gross = emp.Salary!.BasicSalary + emp.Salary.Bonus - emp.Salary.Deduction;
             decimal tax = gross * 0.10m;
             decimal net = gross - tax;
 
-            var payroll = new Payroll
-            {
+            generated.Add(new Payroll {
                 EmployeeId = emp.Id,
                 Month = month,
                 Year = year,
@@ -52,8 +54,7 @@ public class PayrollController : ControllerBase
                 TaxDeduction = tax,
                 NetSalary = net,
                 GeneratedDate = DateTime.Now
-            };
-            generated.Add(payroll);
+            });
         }
 
         _context.Payrolls.AddRange(generated);

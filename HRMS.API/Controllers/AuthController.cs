@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
     {
         var user = _context.Users.FirstOrDefault(u => u.Username == dto.Username);
         if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-            return Unauthorized("Invalid credentials");
+            return Unauthorized(new { message = "Invalid credentials" });
 
         var token = GenerateToken(user);
         return Ok(new { token });
@@ -34,22 +34,21 @@ public class AuthController : ControllerBase
     public IActionResult Register([FromBody] LoginDto dto)
     {
         if (_context.Users.Any(u => u.Username == dto.Username))
-            return BadRequest("Username already exists");
+            return BadRequest(new { message = "Username already exists" });
 
-        var user = new User
-        {
+        var user = new User {
             Username = dto.Username,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             Role = "Admin"
         };
         _context.Users.Add(user);
         _context.SaveChanges();
-        return Ok("User registered successfully");
+        return Ok(new { message = "User registered successfully" });
     }
 
     private string GenerateToken(User user)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var claims = new[] {
             new Claim(ClaimTypes.Name, user.Username),
@@ -66,6 +65,6 @@ public class AuthController : ControllerBase
 
 public class LoginDto
 {
-    public string Username { get; set; }
-    public string Password { get; set; }
+    public string Username { get; set; } = "";
+    public string Password { get; set; } = "";
 }

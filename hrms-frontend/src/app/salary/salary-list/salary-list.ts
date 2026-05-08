@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
@@ -61,19 +61,30 @@ export class SalaryListComponent implements OnInit {
   salaries: Salary[] = [];
   columns = ['employee', 'basic', 'bonus', 'deduction', 'actions'];
 
-  constructor(private salaryService: SalaryService, public router: Router, private dialog: MatDialog) {}
+  constructor(private salaryService: SalaryService, public router: Router, private dialog: MatDialog, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() { this.load(); }
 
-  load() { this.salaryService.getAll().subscribe(data => this.salaries = data); }
+  load() {
+    this.salaryService.getAll().subscribe(data => {
+      this.salaries = [...data];
+      this.cdr.detectChanges();
+    });
+  } 
 
   openForm(salary?: Salary) {
     const ref = this.dialog.open(SalaryFormComponent, { width: '400px', data: salary });
-    ref.afterClosed().subscribe(result => { if (result) this.load(); });
+    ref.afterClosed().subscribe(result => {
+      if (result) {
+        this.load();
+      }
+    });
   }
 
   delete(id: number) {
     if (confirm('Delete this salary record?'))
-      this.salaryService.delete(id).subscribe(() => this.load());
+      this.salaryService.delete(id).subscribe(() => {
+        this.load();
+      });
   }
 }
