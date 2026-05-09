@@ -1,39 +1,258 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
-@use '@angular/material' as mat;
-
-html {
-  height: 100%;
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
-      ),
-      typography: Roboto,
-      density: 0,
-    )
-  );
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
-  margin: 0;
-  height: 100%;
+  font-family: 'Inter', sans-serif;
+  background: #f5f6fa;
+  color: #1a1f2e;
 }
-/* You can add global styles to this file, and also import other style files */
+
+.page-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 220px !important;
+  min-width: 220px !important;
+  background: #1a1f2e;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0 !important;
+  padding: 0;
+}
+
+.sidebar-logo {
+  padding: 20px 20px 16px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 8px;
+
+  span { color: #5b8dee; }
+  small {
+    display: block;
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    font-weight: 400;
+    margin-top: 2px;
+  }
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 8px 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.04); }
+  &.active {
+    color: #fff;
+    background: rgba(91,141,238,0.12);
+    border-left: 2px solid #5b8dee;
+  }
+}
+
+.sidebar-footer {
+  padding: 12px 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.top-bar {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.top-bar-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1f2e;
+}
+
+.top-bar-actions { display: flex; gap: 10px; align-items: center; }
+
+.content-area {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px 20px;
+  border: 1px solid #e5e7eb;
+
+  .stat-label { font-size: 12px; color: #9ca3af; margin-bottom: 6px; }
+  .stat-value { font-size: 26px; font-weight: 600; color: #1a1f2e; }
+  .stat-sub { font-size: 12px; color: #5b8dee; margin-top: 4px; }
+}
+
+.section-card {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.section-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h3 { font-size: 14px; font-weight: 600; color: #1a1f2e; }
+}
+
+.btn-primary {
+  background: #5b8dee;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 7px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s;
+  &:hover { background: #4a7de0; }
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+  padding: 8px 16px;
+  border-radius: 7px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  &:hover { background: #f9fafb; }
+}
+
+.btn-danger {
+  background: #fee2e2;
+  color: #dc2626;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 7px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  &:hover { background: #fecaca; }
+}
+
+.badge-active {
+  background: #dcfce7;
+  color: #166534;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.badge-inactive {
+  background: #fef9c3;
+  color: #854d0e;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 7px;
+  padding: 8px 14px;
+  width: 280px;
+
+  input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 13px;
+    color: #374151;
+    width: 100%;
+    &::placeholder { color: #9ca3af; }
+  }
+  mat-icon { color: #9ca3af; font-size: 18px; }
+}
+
+mat-table {
+  width: 100%;
+  mat-header-cell {
+    font-size: 12px !important;
+    color: #9ca3af !important;
+    font-weight: 500 !important;
+    background: #f9fafb;
+  }
+  mat-cell { font-size: 13px !important; color: #374151 !important; }
+  mat-row:hover { background: #f9fafb; }
+}
+
+.mat-mdc-dialog-container {
+  border-radius: 12px !important;
+}
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.page-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  width: 100%;
+}
+
+.sidebar {
+  width: 220px !important;
+  min-width: 220px !important;
+  background: #1a1f2e;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0 !important;
+}

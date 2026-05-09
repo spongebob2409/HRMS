@@ -1,5 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+
+export interface Employee {
+  name: string;
+}
 
 export interface Payroll {
   id: number;
@@ -10,6 +14,7 @@ export interface Payroll {
   taxDeduction: number;
   netSalary: number;
   generatedDate: string;
+  employee?: Employee;
 }
 
 @Injectable({ providedIn: 'root' })
