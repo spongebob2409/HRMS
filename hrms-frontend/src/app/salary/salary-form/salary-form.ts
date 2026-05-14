@@ -1,10 +1,15 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { SalaryService, Salary } from '../../services/salary';
 import { EmployeeService, Employee } from '../../services/employee';
+
+interface SalaryFormDialogData {
+  salary?: Salary;
+  employees?: Employee[];
+}
 
 @Component({
   selector: 'app-salary-form',
@@ -15,7 +20,7 @@ import { EmployeeService, Employee } from '../../services/employee';
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
         <div>
           <h2 style="font-size:18px;font-weight:600;color:#111827;margin:0;">
-            {{data?.id ? 'Edit Salary' : 'Add Salary Record'}}
+            {{salary.id ? 'Edit Salary' : 'Add Salary Record'}}
           </h2>
           <p style="font-size:13px;color:#9ca3af;margin:4px 0 0;">
             Set salary details for an employee
@@ -29,10 +34,12 @@ import { EmployeeService, Employee } from '../../services/employee';
       <div style="display:flex;flex-direction:column;gap:16px;">
         <div>
           <label style="font-size:12px;font-weight:500;color:#374151;display:block;margin-bottom:6px;">Employee</label>
-          <select [(ngModel)]="salary.employeeId"
+          <select [(ngModel)]="salary.employeeId" [disabled]="isLoadingEmployees"
             style="width:100%;padding:10px 14px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;outline:none;color:#111827;background:#fff;box-sizing:border-box;">
-            <option value="0" disabled>Select an employee</option>
-            <option *ngFor="let emp of employees" [value]="emp.id">
+            <option [ngValue]="0" disabled>
+              {{isLoadingEmployees ? 'Loading employees...' : 'Select an employee'}}
+            </option>
+            <option *ngFor="let emp of employees" [ngValue]="emp.id">
               {{emp.name}} — {{emp.position}}
             </option>
           </select>
@@ -81,7 +88,7 @@ import { EmployeeService, Employee } from '../../services/employee';
         </button>
         <button (click)="save()"
           style="padding:9px 20px;border:none;border-radius:8px;background:#0ea5e9;color:#fff;font-size:13px;cursor:pointer;font-weight:500;">
-          {{data?.id ? 'Update Salary' : 'Add Salary'}}
+          {{salary.id ? 'Update Salary' : 'Add Salary'}}
         </button>
       </div>
     </div>
@@ -89,19 +96,43 @@ import { EmployeeService, Employee } from '../../services/employee';
 })
 export class SalaryFormComponent implements OnInit {
   employees: Employee[] = [];
+  isLoadingEmployees = true;
   salary: Salary = { id: 0, employeeId: 0, basicSalary: 0, bonus: 0, deduction: 0, effectiveDate: '' };
 
   constructor(
     private salaryService: SalaryService,
     private empService: EmployeeService,
+    private cdr: ChangeDetectorRef,
     private dialogRef: MatDialogRef<SalaryFormComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: Salary
+    @Inject(MAT_DIALOG_DATA) public data: SalaryFormDialogData | Salary | null
   ) {
-    if (data) this.salary = { ...data };
+    const dialogData = this.data as SalaryFormDialogData | null;
+    if (dialogData?.salary) {
+      this.salary = { ...dialogData.salary };
+    } else if (this.data && (this.data as Salary).id !== undefined) {
+      this.salary = { ...(this.data as Salary) };
+    }
+
+    if (dialogData?.employees?.length) {
+      this.employees = dialogData.employees;
+      this.isLoadingEmployees = false;
+    }
   }
 
   ngOnInit() {
-    this.empService.getAll().subscribe(data => this.employees = data);
+    if (!this.isLoadingEmployees) return;
+
+    this.empService.getAll().subscribe({
+      next: (data) => {
+        this.employees = data;
+        this.isLoadingEmployees = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.isLoadingEmployees = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   save() {

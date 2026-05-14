@@ -5,6 +5,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { SalaryService, Salary } from '../../services/salary';
+import { EmployeeService, Employee } from '../../services/employee';
 import { SalaryFormComponent } from '../salary-form/salary-form';
 import { NavbarComponent } from '../../shared/navbar/navbar';
 
@@ -97,16 +98,21 @@ import { NavbarComponent } from '../../shared/navbar/navbar';
 })
 export class SalaryListComponent implements OnInit {
   salaries: Salary[] = [];
+  employees: Employee[] = [];
   columns = ['employee', 'basic', 'bonus', 'deduction', 'net', 'actions'];
 
   constructor(
     private salaryService: SalaryService,
+    private empService: EmployeeService,
     public router: Router,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit() { this.load(); }
+  ngOnInit() {
+    this.load();
+    this.loadEmployees();
+  }
 
   load() {
     this.salaryService.getAll().subscribe(data => {
@@ -115,8 +121,19 @@ export class SalaryListComponent implements OnInit {
     });
   }
 
+  loadEmployees() {
+    this.empService.getAll().subscribe({
+      next: (data) => {
+        this.employees = data;
+      }
+    });
+  }
+
   openForm(salary?: Salary) {
-    const ref = this.dialog.open(SalaryFormComponent, { width: '420px', data: salary });
+    const ref = this.dialog.open(SalaryFormComponent, {
+      width: '420px',
+      data: { salary, employees: this.employees }
+    });
     ref.afterClosed().subscribe(result => { if (result) this.load(); });
   }
 
